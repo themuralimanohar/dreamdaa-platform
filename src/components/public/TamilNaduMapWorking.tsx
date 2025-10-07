@@ -318,7 +318,7 @@ export default function TamilNaduMapWorking() {
     // Small delay to ensure DOM is ready
     const timer = setTimeout(initMap, 100)
     return () => clearTimeout(timer)
-  }, [])
+  }, [districtMap])
 
   if (mapStatus === 'loading') {
     return (

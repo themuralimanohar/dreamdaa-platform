@@ -305,7 +305,7 @@ export default function TamilNaduGoogleMap() {
             <p><strong>Setup Instructions:</strong></p>
             <ol className="list-decimal list-inside space-y-1 text-left">
               <li>Get an API key from <a href="https://console.cloud.google.com/apis/credentials" target="_blank" className="underline">Google Cloud Console</a></li>
-              <li>Enable the "Maps JavaScript API" for your project</li>
+              <li>Enable the &quot;Maps JavaScript API&quot; for your project</li>
               <li>Copy .env.example to .env.local and add your API key</li>
               <li>Set NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=your_api_key_here</li>
             </ol>

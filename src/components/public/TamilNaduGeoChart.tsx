@@ -97,7 +97,7 @@ export default function TamilNaduGeoChart() {
             console.log('Drawing Tamil Nadu GeoChart...')
 
             // Prepare data for Google GeoChart
-            const chartData = [
+            const chartData: (string | number)[][] = [
               ['District Code', 'District', 'Coverage Percentage', 'Color']
             ]
 

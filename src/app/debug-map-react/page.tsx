@@ -44,29 +44,7 @@ export default function DebugMapReactPage() {
           addLog('Leaflet CSS already loaded')
         }
 
-        // Load Leaflet JS
-        if (!(window as any).L) {
-          addLog('Loading Leaflet JS...')
-          const script = document.createElement('script')
-          script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js'
-          
-          script.onload = () => {
-            addLog('Leaflet JS loaded successfully')
-            initLeafletMap()
-          }
-          
-          script.onerror = () => {
-            addLog('Failed to load Leaflet JS')
-            setMapStatus('error')
-          }
-          
-          document.head.appendChild(script)
-        } else {
-          addLog('Leaflet already available')
-          initLeafletMap()
-        }
-
-        function initLeafletMap() {
+        const initLeafletMap = () => {
           try {
             addLog('Initializing Leaflet map...')
             
@@ -127,6 +105,28 @@ export default function DebugMapReactPage() {
             addLog(`Leaflet initialization error: ${error}`)
             setMapStatus('error')
           }
+        }
+
+        // Load Leaflet JS
+        if (!(window as any).L) {
+          addLog('Loading Leaflet JS...')
+          const script = document.createElement('script')
+          script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js'
+          
+          script.onload = () => {
+            addLog('Leaflet JS loaded successfully')
+            initLeafletMap()
+          }
+          
+          script.onerror = () => {
+            addLog('Failed to load Leaflet JS')
+            setMapStatus('error')
+          }
+          
+          document.head.appendChild(script)
+        } else {
+          addLog('Leaflet already available')
+          initLeafletMap()
         }
 
       } catch (error) {

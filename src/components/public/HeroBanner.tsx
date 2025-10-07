@@ -94,7 +94,7 @@ export default function HeroBanner() {
       {videoModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-90" onClick={() => setVideoModalOpen(false)}>
           <div className="bg-white rounded-lg p-8 max-w-2xl mx-4">
-            <p className="text-center text-gray-600">Video player would be implemented here with the organization's story video.</p>
+            <p className="text-center text-gray-600">Video player would be implemented here with the organization&apos;s story video.</p>
             <Button 
               className="mt-4 mx-auto block" 
               onClick={() => setVideoModalOpen(false)}

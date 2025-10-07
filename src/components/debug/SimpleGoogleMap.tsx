@@ -5,7 +5,7 @@ import { useEffect, useRef } from 'react'
 declare global {
   interface Window {
     google: any
-    initDebugMap: () => void
+    initDebugMap?: () => void
   }
 }
 

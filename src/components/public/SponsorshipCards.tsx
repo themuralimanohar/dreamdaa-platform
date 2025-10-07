@@ -194,7 +194,7 @@ function CountSlider({ baseAmount, tierId, onCountChange, tierType, initialCount
   // Initialize the count on mount and notify parent
   useEffect(() => {
     onCountChange(initialCount, baseAmount * initialCount, true) // Skip effect on initial load
-  }, []) // Only run on mount
+  }, [baseAmount, initialCount, onCountChange]) // Include all dependencies
 
   const handleCountChange = (newCount: number) => {
     setCount(newCount)
