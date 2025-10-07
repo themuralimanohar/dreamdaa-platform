@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tamil Nadu Highcharts Map Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f8fafc;
+        }
+        #container {
+            height: 600px;
+            width: 100%;
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .legend {
+            max-width: 1000px;
+            margin: 20px auto;
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .legend h4 {
+            margin: 0 0 15px 0;
+            font-size: 18px;
+            font-weight: bold;
+            color: #1f2937;
+        }
+        .legend-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .legend-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 4px;
+        }
+        .red { background-color: #ef4444; }
+        .orange { background-color: #f59e0b; }
+        .blue { background-color: #3b82f6; }
+        .green { background-color: #10b981; }
+    </style>
+</head>
+<body>
+    <h1 style="text-align: center; color: #1f2937; margin-bottom: 30px;">Tamil Nadu School Coverage Map</h1>
+    
+    <div id="container"></div>
+    
+    <div class="legend">
+        <h4>Funding Status Legend</h4>
+        <div class="legend-grid">
+            <div class="legend-item">
+                <div class="legend-color red"></div>
+                <span>Needs Funding (0-40%)</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color orange"></div>
+                <span>Partially Funded (41-70%)</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color blue"></div>
+                <span>Well Funded (71-99%)</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color green"></div>
+                <span>Fully Funded (100%)</span>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.highcharts.com/maps/highmaps.js"></script>
+    <script>
+        // Tamil Nadu Districts Sample Data (simplified version)
+        const tamilNaduDistricts = [
+            { id: 'chennai', name: 'Chennai', totalSchools: 687, coveredSchools: 687, fundingStatus: 'complete' },
+            { id: 'coimbatore', name: 'Coimbatore', totalSchools: 823, coveredSchools: 456, fundingStatus: 'medium' },
+            { id: 'madurai', name: 'Madurai', totalSchools: 654, coveredSchools: 321, fundingStatus: 'medium' },
+            { id: 'salem', name: 'Salem', totalSchools: 543, coveredSchools: 234, fundingStatus: 'low' },
+            { id: 'tiruchirappalli', name: 'Tiruchirappalli', totalSchools: 456, coveredSchools: 345, fundingStatus: 'high' },
+            { id: 'tirunelveli', name: 'Tirunelveli', totalSchools: 398, coveredSchools: 187, fundingStatus: 'low' },
+            { id: 'vellore', name: 'Vellore', totalSchools: 432, coveredSchools: 298, fundingStatus: 'high' },
+            { id: 'erode', name: 'Erode', totalSchools: 376, coveredSchools: 234, fundingStatus: 'medium' },
+            { id: 'thanjavur', name: 'Thanjavur', totalSchools: 445, coveredSchools: 156, fundingStatus: 'low' },
+            { id: 'dindigul', name: 'Dindigul', totalSchools: 334, coveredSchools: 223, fundingStatus: 'medium' },
+            { id: 'cuddalore', name: 'Cuddalore', totalSchools: 387, coveredSchools: 198, fundingStatus: 'low' },
+            { id: 'kanchipuram', name: 'Kanchipuram', totalSchools: 456, coveredSchools: 334, fundingStatus: 'high' }
+        ];
+
+        // Helper functions
+        function getCoveragePercentage(district) {
+            return Math.round((district.coveredSchools / district.totalSchools) * 100);
+        }
+
+        function getDistrictColor(fundingStatus) {
+            const colors = {
+                'low': '#ef4444',      // Red
+                'medium': '#f59e0b',   // Orange  
+                'high': '#3b82f6',     // Blue
+                'complete': '#10b981'  // Green
+            };
+            return colors[fundingStatus] || '#6b7280';
+        }
+
+        function getFundingStatusText(status) {
+            const statusTexts = {
+                'low': 'Needs Funding',
+                'medium': 'Partially Funded', 
+                'high': 'Well Funded',
+                'complete': 'Fully Funded'
+            };
+            return statusTexts[status] || 'Unknown';
+        }
+
+        // Prepare data for Highcharts
+        const mapData = tamilNaduDistricts.map((district, index) => {
+            // Create simple grid layout for districts
+            const col = index % 4;
+            const row = Math.floor(index / 4);
+            const x = 100 + col * 100;
+            const y = 100 + row * 80;
+            
+            return {
+                'hc-key': district.id,
+                name: district.name,
+                value: getCoveragePercentage(district),
+                color: getDistrictColor(district.fundingStatus),
+                district: district,
+                path: `M ${x} ${y} L ${x+80} ${y} L ${x+80} ${y+60} L ${x} ${y+60} Z`
+            };
+        });
+
+        // Create custom map data structure
+        const customMapData = {
+            title: 'Tamil Nadu Districts',
+            version: '1.0.0',
+            type: 'FeatureCollection',
+            features: mapData.map(item => ({
+                type: 'Feature',
+                properties: {
+                    'hc-key': item['hc-key'],
+                    name: item.name,
+                    value: item.value
+                },
+                geometry: {
+                    type: 'Polygon',
+                    coordinates: [[
+                        [item.path.match(/M (\d+)/)[1], item.path.match(/M \d+ (\d+)/)[1]],
+                        [item.path.match(/L (\d+)/)[1], item.path.match(/L \d+ (\d+)/)[1]],
+                        [item.path.match(/L (\d+) (\d+) L/)[1], item.path.match(/L \d+ (\d+) L/)[1]],
+                        [item.path.match(/L (\d+) (\d+) Z/)[1], item.path.match(/L \d+ (\d+) Z/)[1]]
+                    ]]
+                }
+            }))
+        };
+
+        // Create the Highcharts map
+        Highcharts.mapChart('container', {
+            chart: {
+                backgroundColor: '#ffffff',
+                borderRadius: 12,
+                spacing: [20, 20, 20, 20]
+            },
+            title: {
+                text: 'Tamil Nadu School Coverage Districts',
+                style: {
+                    fontSize: '24px',
+                    fontWeight: 'bold',
+                    color: '#1f2937'
+                }
+            },
+            subtitle: {
+                text: 'Click on districts to view detailed information',
+                style: {
+                    fontSize: '14px',
+                    color: '#6b7280'
+                }
+            },
+            legend: {
+                enabled: false
+            },
+            tooltip: {
+                enabled: true,
+                formatter: function() {
+                    const district = this.point.district;
+                    if (district) {
+                        return `<b>${district.name}</b><br/>
+                               Coverage: ${getCoveragePercentage(district)}%<br/>
+                               Schools: ${district.coveredSchools}/${district.totalSchools}<br/>
+                               Status: ${getFundingStatusText(district.fundingStatus)}`;
+                    }
+                    return '';
+                },
+                backgroundColor: 'white',
+                borderColor: '#e5e7eb',
+                borderRadius: 8,
+                shadow: true,
+                style: {
+                    fontSize: '12px'
+                }
+            },
+            credits: {
+                enabled: false
+            },
+            plotOptions: {
+                series: {
+                    cursor: 'pointer',
+                    states: {
+                        hover: {
+                            brightness: 0.2
+                        },
+                        select: {
+                            brightness: -0.2,
+                            borderWidth: 3,
+                            borderColor: '#374151'
+                        }
+                    },
+                    events: {
+                        click: function(e) {
+                            const district = e.point.district;
+                            if (district) {
+                                alert(`${district.name} District\n\nCoverage: ${getCoveragePercentage(district)}%\nSchools: ${district.coveredSchools}/${district.totalSchools}\nStatus: ${getFundingStatusText(district.fundingStatus)}\n\nNeed Sponsorship: ${district.totalSchools - district.coveredSchools} schools`);
+                            }
+                        }
+                    },
+                    allowPointSelect: true,
+                    borderColor: '#ffffff',
+                    borderWidth: 2
+                }
+            },
+            series: [{
+                type: 'map',
+                data: mapData,
+                name: 'School Coverage',
+                dataLabels: {
+                    enabled: true,
+                    format: '{point.name}',
+                    style: {
+                        fontSize: '10px',
+                        fontWeight: 'bold',
+                        color: '#000000',
+                        textOutline: '1px white'
+                    }
+                }
+            }]
+        });
+
+        console.log('Tamil Nadu Highcharts Map loaded successfully!');
+    </script>
+</body>
+</html>
