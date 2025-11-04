@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Google Maps API Test</title>
+    <style>
+        #map {
+            height: 400px;
+            width: 100%;
+        }
+    </style>
+    <style>
+        /* Layout */
+        body { margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
+        .wrap { display: grid; grid-template-columns: 1fr min(360px, 38vw); height: 100vh; }
+        #map { width: 100%; height: 100%; }
+        aside {
+          border-left: 1px solid #e5e7eb; padding: 16px; overflow: auto;
+          background: #fafafa;
+        }
+        h2 { margin: 0 0 8px; font-size: 18px; }
+        .meta { font-size: 13px; color: #6b7280; margin-bottom: 8px; }
+        .pill { display:inline-block; padding:2px 8px; border-radius:999px; background:#eef2ff; font-size:12px; }
+        .legend { margin-top:12px; font-size:12px; color:#555 }
+        .credit { position:absolute; z-index:400; right:10px; bottom:8px; background:#fff; padding:4px 8px; border-radius:6px; border:1px solid #e5e7eb; font-size:12px; }
+      </style>
+    <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+  />
+</head>
+<body>
+<div class="wrap">
+  <div id="map"></div>
+  <aside id="panel">
+    <h2>TN District Explorer</h2>
+    <div class="meta">Click a district to see details</div>
+    <p>This demo uses GeoJSON boundaries rendered with Leaflet. Each district is colored with a distinct hue. Replace the content map in the script to show your own copy, stats, links, images, etc.</p>
+    <div class="legend">Tip: Ctrl/Cmd + scroll to zoom the map.</div>
+  </aside>
+</div>
+
+<div class="credit">Boundaries via public GeoJSON (see code comments)</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+  // --- 1) Where to load TN districts (GeoJSON) ---
+  // Repo provides district-level GeoJSON with a stable CDN URL:
+  // https://github.com/udit-001/india-maps-data  (Tamil Nadu: geojson/states/tamil-nadu.geojson)
+  // If jsDelivr ever throttles, you can swap to a raw GitHub URL or your own host.
+  const TN_GEOJSON_URL = "https://cdn.jsdelivr.net/gh/udit-001/india-maps-data@main/geojson/states/tamil-nadu.geojson";
+
+  // --- 2) Optional: Your content per district (key by district name from the GeoJSON) ---
+  // Start with a few; any missing will gracefully fall back to just the name.
+  const districtContent = {
+    "Chennai": {
+      tag: "Metro",
+      html: "<p>Capital city & major IT hub. Add KPIs, links, images, or CTAs here.</p>"
+    },
+    "Coimbatore": {
+      tag: "Manufacturing",
+      html: "<p>Known for textiles & engineering. Put your app usage numbers or case studies.</p>"
+    },
+    "Madurai": {
+      tag: "Heritage",
+      html: "<p>Historic city around the Meenakshi Amman Temple.</p>"
+    }
+    // Add more districts as needed...
+  };
+
+  // --- 3) Simple distinct color palette generator (HSL wheel) ---
+  function colorFor(index, total) {
+    const hue = Math.round((360 / total) * index);
+    return `hsl(${hue} 70% 60%)`;
+  }
+
+  // --- 4) Initialize Leaflet map ---
+  const map = L.map("map", { zoomControl: true });
+  // A clean basemap (optional). You can remove this tile layer to show only districts.
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    maxZoom: 18,
+    attribution: "&copy; OpenStreetMap"
+  }).addTo(map);
+
+  const panel = document.getElementById("panel");
+
+  // --- 5) Fetch districts and render ---
+  fetch(TN_GEOJSON_URL)
+    .then(r => r.json())
+    .then(geojson => {
+      // Detect district property name (commonly 'district' or 'DIST_NAME')
+      const features = geojson.features || [];
+      const total = features.length || 1;
+
+      // Build a stable color map by district name so colors don't reshuffle on redraw
+      const colorMap = new Map();
+      features
+        .map(f => {
+          const props = f.properties || {};
+          const name = (props.district || props.DIST_NAME || props.District || props.NAME_2 || "Unknown") + "";
+          return name.trim();
+        })
+        .sort((a,b) => a.localeCompare(b))
+        .forEach((name, i) => colorMap.set(name, colorFor(i, total)));
+
+      const layer = L.geoJSON(geojson, {
+        style: feature => {
+          const p = feature.properties || {};
+          const name = (p.district || p.DIST_NAME || p.District || p.NAME_2 || "Unknown") + "";
+          return {
+            color: "#ffffff",        // stroke
+            weight: 1,
+            fillOpacity: 0.85,
+            fillColor: colorMap.get(name.trim()) || "#cccccc"
+          };
+        },
+        onEachFeature: (feature, lyr) => {
+          const p = feature.properties || {};
+          const name = (p.district || p.DIST_NAME || p.District || p.NAME_2 || "Unknown") + "";
+
+          // Hover highlight
+          lyr.on("mouseover", () => {
+            lyr.setStyle({ weight: 2, color: "#111" });
+          });
+          lyr.on("mouseout", () => {
+            lyr.setStyle({ weight: 1, color: "#fff" });
+          });
+
+          // Click -> side panel + popup
+          lyr.on("click", (e) => {
+            const info = districtContent[name.trim()];
+            const tag = info?.tag ? `<span class="pill">${info.tag}</span>` : "";
+            const body = info?.html || "<p>Add your content for this district.</p>";
+            panel.innerHTML = `
+              <h2>${name}</h2>
+              <div class="meta">Tamil Nadu · ${tag}</div>
+              ${body}
+              <div class="legend">District color is categorical (not value-based).</div>
+            `;
+            lyr.bindPopup(`<strong>${name}</strong>`).openPopup(e.latlng);
+          });
+        }
+      }).addTo(map);
+
+      // Fit view to Tamil Nadu bounds
+      map.fitBounds(layer.getBounds(), { padding: [10, 10] });
+    })
+    .catch(err => {
+      console.error("Failed to load GeoJSON:", err);
+      panel.innerHTML = `
+        <h2>TN District Explorer</h2>
+        <p>Could not load district boundaries. If you're on a corporate network, your firewall might block the CDN.</p>
+        <p>Try hosting the GeoJSON yourself or use an alternate source.</p>
+      `;
+    });
+</script>
+
+</body>
+</html>

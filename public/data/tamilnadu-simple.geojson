@@ -1,0 +1,175 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Chennai",
+        "id": "chennai"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [80.1000, 13.2000],
+          [80.3000, 13.2000],
+          [80.3000, 13.0000],
+          [80.1000, 13.0000],
+          [80.1000, 13.2000]
+        ]]
+      }
+    },
+    {
+      "type": "Feature", 
+      "properties": {
+        "name": "Coimbatore",
+        "id": "coimbatore"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [76.8000, 11.2000],
+          [77.2000, 11.2000],
+          [77.2000, 10.8000],
+          [76.8000, 10.8000],
+          [76.8000, 11.2000]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Madurai", 
+        "id": "madurai"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [77.8000, 10.2000],
+          [78.4000, 10.2000], 
+          [78.4000, 9.6000],
+          [77.8000, 9.6000],
+          [77.8000, 10.2000]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Salem",
+        "id": "salem"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [77.9000, 11.8000],
+          [78.3000, 11.8000],
+          [78.3000, 11.4000],
+          [77.9000, 11.4000],
+          [77.9000, 11.8000]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Tiruchirappalli",
+        "id": "tiruchirappalli"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [78.5000, 11.0000],
+          [78.9000, 11.0000],
+          [78.9000, 10.6000],
+          [78.5000, 10.6000],
+          [78.5000, 11.0000]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Vellore",
+        "id": "vellore"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [78.9000, 13.0000],
+          [79.3000, 13.0000],
+          [79.3000, 12.6000],
+          [78.9000, 12.6000],
+          [78.9000, 13.0000]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Tirunelveli",
+        "id": "tirunelveli"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [77.5000, 9.0000],
+          [78.0000, 9.0000],
+          [78.0000, 8.5000],
+          [77.5000, 8.5000],
+          [77.5000, 9.0000]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Erode",
+        "id": "erode"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [77.5000, 11.5000],
+          [77.9000, 11.5000],
+          [77.9000, 11.1000],
+          [77.5000, 11.1000],
+          [77.5000, 11.5000]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Dindigul",
+        "id": "dindigul"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [77.8000, 10.5000],
+          [78.2000, 10.5000],
+          [78.2000, 10.1000],
+          [77.8000, 10.1000],
+          [77.8000, 10.5000]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Thanjavur",
+        "id": "thanjavur"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [79.0000, 11.0000],
+          [79.4000, 11.0000],
+          [79.4000, 10.6000],
+          [79.0000, 10.6000],
+          [79.0000, 11.0000]
+        ]]
+      }
+    }
+  ]
+}

@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tamil Nadu Google GeoChart Test</title>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f8fafc;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .map-container {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        .legend {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .legend h4 {
+            margin: 0 0 15px 0;
+            font-size: 18px;
+            font-weight: bold;
+            color: #1f2937;
+        }
+        .legend-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .legend-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 4px;
+        }
+        .red { background-color: #ef4444; }
+        .orange { background-color: #f59e0b; }
+        .blue { background-color: #3b82f6; }
+        .green { background-color: #10b981; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 style="text-align: center; color: #1f2937; margin-bottom: 30px;">
+            Tamil Nadu Districts - Google GeoChart Test
+        </h1>
+        
+        <div class="map-container">
+            <div id="regions_div" style="width: 100%; height: 500px;"></div>
+        </div>
+        
+        <div class="legend">
+            <h4>School Coverage Status</h4>
+            <div class="legend-grid">
+                <div class="legend-item">
+                    <div class="legend-color red"></div>
+                    <span>Needs Funding (0-40%)</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color orange"></div>
+                    <span>Partially Funded (41-70%)</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color blue"></div>
+                    <span>Well Funded (71-99%)</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color green"></div>
+                    <span>Fully Funded (100%)</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        google.charts.load('current', {
+            'packages': ['geochart'],
+        });
+        google.charts.setOnLoadCallback(drawRegionsMap);
+
+        function drawRegionsMap() {
+            // Try Tamil Nadu region first
+            var data = google.visualization.arrayToDataTable([
+                ['State', 'Coverage'],
+                ['Tamil Nadu', 75]  // Single state to test Tamil Nadu region
+            ]);
+
+            var options = {
+                region: 'IN-TN', // Tamil Nadu region
+                displayMode: 'regions',
+                resolution: 'provinces',
+                colorAxis: {colors: ['#ef4444', '#f59e0b', '#3b82f6', '#10b981']},
+                backgroundColor: '#f8fafc',
+                width: '100%',
+                height: 500
+            };
+
+            var chart = new google.visualization.GeoChart(
+                document.getElementById('regions_div'));
+
+            // Add event listener for region clicks
+            google.visualization.events.addListener(chart, 'select', function() {
+                var selection = chart.getSelection();
+                if (selection.length > 0) {
+                    var selectedRow = selection[0].row;
+                    var stateName = data.getValue(selectedRow, 0);
+                    alert('You selected: ' + stateName);
+                }
+            });
+
+            chart.draw(data, options);
+            console.log('Tamil Nadu GeoChart drawn successfully');
+            
+            // If Tamil Nadu region doesn't work, fall back to India with Tamil Nadu highlighted
+            google.visualization.events.addListener(chart, 'error', function() {
+                console.log('Tamil Nadu region not available, trying India with TN highlight');
+                drawIndiaFallback();
+            });
+        }
+
+        function drawIndiaFallback() {
+            // Fallback to show India map with Tamil Nadu highlighted
+            var data = google.visualization.arrayToDataTable([
+                ['State Code', 'State', 'Coverage'],
+                ['IN-TN', 'Tamil Nadu', 75],
+                ['IN-KA', 'Karnataka', 45],
+                ['IN-AP', 'Andhra Pradesh', 55],
+                ['IN-KL', 'Kerala', 65]
+            ]);
+
+            var options = {
+                region: 'IN',
+                displayMode: 'regions', 
+                resolution: 'provinces',
+                colorAxis: {colors: ['#ef4444', '#f59e0b', '#3b82f6', '#10b981']},
+                backgroundColor: '#f8fafc',
+                width: '100%',
+                height: 500,
+                tooltip: {trigger: 'both'}
+            };
+
+            var chart = new google.visualization.GeoChart(
+                document.getElementById('regions_div'));
+
+            google.visualization.events.addListener(chart, 'select', function() {
+                var selection = chart.getSelection();
+                if (selection.length > 0) {
+                    var selectedRow = selection[0].row;
+                    var stateName = data.getValue(selectedRow, 1);
+                    if (stateName === 'Tamil Nadu') {
+                        alert('Tamil Nadu selected! This would show district-level details.');
+                    } else {
+                        alert('You selected: ' + stateName);
+                    }
+                }
+            });
+
+            chart.draw(data, options);
+            console.log('India fallback map drawn successfully');
+        }
+    </script>
+</body>
+</html>
